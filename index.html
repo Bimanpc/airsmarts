@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Tags Tracking App</title>
+  <style>
+    /* Basic styling */
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 600px; margin: auto; }
+    h1 { text-align: center; }
+    .tag-input, .search-input { width: calc(100% - 20px); padding: 10px; margin: 5px 0; }
+    .item { display: flex; justify-content: space-between; padding: 8px; background-color: #f9f9f9; margin: 5px 0; border-radius: 5px; }
+    .tags { display: flex; gap: 5px; }
+    .tag { background-color: #007bff; color: #fff; padding: 5px 8px; border-radius: 5px; cursor: pointer; }
+    .tag:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Smart Tags Tracking App</h1>
+
+    <!-- Add a new item with tags -->
+    <input type="text" id="itemName" class="tag-input" placeholder="Item Name" />
+    <input type="text" id="tagInput" class="tag-input" placeholder="Add tags separated by commas" />
+    <button onclick="addItem()">Add Item</button>
+
+    <!-- Search functionality -->
+    <input type="text" id="searchInput" class="search-input" placeholder="Search by tag" oninput="searchTags()" />
+
+    <!-- Display items -->
+    <div id="itemsList"></div>
+  </div>
+
+  <script>
+    // Store items and tags in an array
+    let items = [];
+
+    // Add an item with tags
+    function addItem() {
+      const itemName = document.getElementById('itemName').value.trim();
+      const tags = document.getElementById('tagInput').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+
+      if (itemName && tags.length) {
+        items.push({ name: itemName, tags });
+        document.getElementById('itemName').value = '';
+        document.getElementById('tagInput').value = '';
+        displayItems();
+      }
+    }
+
+    // Display items and their tags
+    function displayItems(filteredItems = items) {
+      const itemsList = document.getElementById('itemsList');
+      itemsList.innerHTML = '';
+      filteredItems.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item';
+
+        const itemName = document.createElement('div');
+        itemName.textContent = item.name;
+
+        const tagsDiv = document.createElement('div');
+        tagsDiv.className = 'tags';
+        item.tags.forEach(tag => {
+          const tagSpan = document.createElement('span');
+          tagSpan.className = 'tag';
+          tagSpan.textContent = tag;
+          tagSpan.onclick = () => removeTag(index, tag);
+          tagsDiv.appendChild(tagSpan);
+        });
+
+        itemDiv.appendChild(itemName);
+        itemDiv.appendChild(tagsDiv);
+        itemsList.appendChild(itemDiv);
+      });
+    }
+
+    // Remove a tag from an item
+    function removeTag(itemIndex, tag) {
+      items[itemIndex].tags = items[itemIndex].tags.filter(t => t !== tag);
+      displayItems();
+    }
+
+    // Search items by tag
+    function searchTags() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const filteredItems = items.filter(item => item.tags.some(tag => tag.toLowerCase().includes(query)));
+      displayItems(filteredItems);
+    }
+
+    displayItems(); // Initial display
+  </script>
+
+</body>
+</html>
